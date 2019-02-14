@@ -5,5 +5,5 @@ require (
 	github.com/aws/aws-sdk-go-v2 v0.7.0
 	github.com/disintegration/imaging v1.6.0
 	github.com/stretchr/testify v1.3.0 // indirect
-	golang.org/x/image v0.0.0-20190118043309-183bebdce1b2 // indirect
+	golang.org/x/image v0.0.0-20190209060608-ef4a1470e0dc // indirect
 )
