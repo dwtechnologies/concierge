@@ -1,4 +1,4 @@
-Doorman
+Doorman (POC)
 -------
 Deeplens application to notify when a user enters a room.
 
