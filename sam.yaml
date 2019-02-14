@@ -11,6 +11,12 @@ Parameters:
   TeamsWebhook:
     Type: String
 
+  DeviceName:
+    Type: String
+
+  IoTEndpoint:
+    Type: String
+
   IoTTopic:
     Type: String
 
@@ -325,6 +331,8 @@ Resources:
       AutoPublishAlias: prod
       Environment:
         Variables:
+          DEVICE_NAME: !Ref DeviceName
+          IOT_ENDPOINT: !Ref IOTEndpoint
           IOT_TOPIC: !Ref IoTTopic
           DeepLensDeviceReadAndWrite: /dev/ttyUSB0
 
