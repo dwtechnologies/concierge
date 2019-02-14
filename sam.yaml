@@ -1,0 +1,335 @@
+Transform: AWS::Serverless-2016-10-31
+Description: Doorman
+
+Parameters:
+  BucketName:
+    Type: String
+
+  RekognitionCollectionID:
+    Type: String
+
+  TeamsWebhook:
+    Type: String
+
+  IoTTopic:
+    Type: String
+
+
+Resources:
+  bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketName
+
+  doormanApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: doorman-api
+      StageName: api
+      DefinitionBody:
+        swagger: 2.0
+        info:
+          title: !Ref AWS::StackName
+        paths:
+          /faces/train:
+            post:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                type: aws_proxy
+                uri:
+                  !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${train.Arn}/invocations
+              responses: {}
+            options:
+              consumes:
+                - application/json
+              produces:
+                - application/json
+              responses:
+                '200':
+                  description: 200 response
+                  schema:
+                    $ref: '#/definitions/Empty'
+                  headers:
+                    Access-Control-Allow-Origin:
+                      type: string
+                    Access-Control-Allow-Methods:
+                      type: string
+                    Access-Control-Allow-Headers:
+                      type: string
+              x-amazon-apigateway-integration:
+                responses:
+                  default:
+                    statusCode: 200
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Methods: "'GET,PUT,DELETE,HEAD,OPTIONS'"
+                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                passthroughBehavior: when_no_match
+                requestTemplates:
+                  application/json: "{\"statusCode\": 200}"
+                type: mock
+
+# IAM roles
+  trainRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: Allow
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: "s3_rekognition"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              -
+                Effect: "Allow"
+                Action:
+                  - "s3:PutObject"
+                  - "s3:PutObjectAcl"
+                  - "s3:GetObject"
+                  - "s3:DeleteObject"
+                Resource: !Sub arn:aws:s3:::${BucketName}/*
+              -
+                Effect: "Allow"
+                Action:
+                  - "rekognition:DetectFaces"
+                  - "rekognition:SearchFacesByImage"
+                  - "rekognition:IndexFaces"
+                Resource: !Sub arn:aws:rekognition:${AWS::Region}:${AWS::AccountId}:collection/${RekognitionCollectionID}
+
+  guessRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: Allow
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/AWSIoTDataAccess
+      Policies:
+        - PolicyName: "s3_rekognition_iot"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              -
+                Effect: "Allow"
+                Action:
+                  - "s3:PutObject"
+                  - "s3:PutObjectAcl"
+                  - "s3:GetObject"
+                  - "s3:DeleteObject"
+                Resource: !Sub arn:aws:s3:::${BucketName}/*
+              -
+                Effect: "Allow"
+                Action:
+                  - "rekognition:DetectFaces"
+                  - "rekognition:SearchFacesByImage"
+                  - "rekognition:IndexFaces"
+                Resource: !Sub arn:aws:rekognition:${AWS::Region}:${AWS::AccountId}:collection/${RekognitionCollectionID}
+              -
+                Effect: "Allow"
+                Action:
+                  - "iot:DescribeEndpoint"
+                Resource: "*"
+
+  unknownRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: Allow
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: "s3"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              -
+                Effect: "Allow"
+                Action:
+                  - "s3:PutObject"
+                  - "s3:PutObjectAcl"
+                  - "s3:GetObject"
+                  - "s3:DeleteObject"
+                Resource: !Sub arn:aws:s3:::${BucketName}/*
+
+  greengrassRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: Allow
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/AWSIoTDataAccess
+      Policies:
+        - PolicyName: "s3"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              -
+                Effect: "Allow"
+                Action:
+                  - "s3:PutObject"
+                  - "s3:PutObjectAcl"
+                Resource:
+                  - !Sub arn:aws:s3:::${BucketName}
+                  - !Sub arn:aws:s3:::${BucketName}/*
+
+# lambda functions
+  train:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: doorman-train
+      Description: "doorman - train function"
+      Handler: main
+      Role: !GetAtt trainRole.Arn
+      Runtime: go1.x
+      MemorySize: 1024
+      Timeout: 10
+      CodeUri: ./source/train/deployment.zip
+      Environment:
+        Variables:
+          BUCKET_NAME: !Ref BucketName
+          REKOGNITION_COLLECTION_ID: !Ref RekognitionCollectionID
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref doormanApi
+            Path: /faces/train
+            Method: post
+
+  guess:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: doorman-guess
+      Description: "doorman - guess function"
+      Handler: main
+      Role: !GetAtt guessRole.Arn
+      Runtime: go1.x
+      MemorySize: 1024
+      Timeout: 16
+      CodeUri: ./source/guess/deployment.zip
+      Environment:
+        Variables:
+          BUCKET_NAME: !Ref BucketName
+          REKOGNITION_COLLECTION_ID: !Ref RekognitionCollectionID
+          IOT_TOPIC: !Ref IoTTopic
+          TEAMS_WEBHOOK: !Ref TeamsWebhook
+      Events:
+        imageEvent:
+          Type: S3
+          Properties:
+            Bucket: !Ref bucket
+            Events: s3:ObjectCreated:*
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: incoming/
+
+  unknown:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: doorman-unknown
+      Description: "doorman - unknown function"
+      Handler: main
+      Role: !GetAtt unknownRole.Arn
+      Runtime: go1.x
+      MemorySize: 1024
+      Timeout: 10
+      CodeUri: ./source/unknown/deployment.zip
+      Environment:
+        Variables:
+          BUCKET_NAME: !Ref BucketName
+          TEAMS_WEBHOOK: !Ref TeamsWebhook
+          TRAIN_URL: !Sub https://${doormanApi}.execute-api.${AWS::Region}.amazonaws.com/api/faces/train
+      Events:
+        imageEvent:
+          Type: S3
+          Properties:
+            Bucket: !Ref bucket
+            Events: s3:ObjectCreated:*
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: unknown/
+                  - Name: suffix
+                    Value: jpg
+
+# greengrass
+  findPerson:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: doorman-find-person
+      Description: "doorman - find person function (greengrass)"
+      Handler: find_person.function_handler
+      Role: !GetAtt greengrassRole.Arn
+      Runtime: python2.7
+      MemorySize: 2048
+      Timeout: 10
+      CodeUri: ./source/find-person/dist/deployment.zip
+      AutoPublishAlias: prod
+      Environment:
+        Variables:
+          BUCKET_NAME: !Ref BucketName
+
+  triggerOpen:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: doorman-trigger-open
+      Description: "doorman - trigger open function (greengrass)"
+      Handler: trigger_open.function_handler
+      Role: !GetAtt greengrassRole.Arn
+      Runtime: python2.7
+      MemorySize: 128
+      Timeout: 10
+      CodeUri: ./source/trigger-open/dist/deployment.zip
+      AutoPublishAlias: prod
+      Environment:
+        Variables:
+          IOT_TOPIC: !Ref IoTTopic
+          DeepLensDeviceReadAndWrite: /dev/ttyUSB0
+
+Outputs:
+  apiurl:
+    Description: API url
+    Value: !Sub https://${doormanApi}.execute-api.${AWS::Region}.amazonaws.com/api
+
