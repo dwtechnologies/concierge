@@ -26,7 +26,7 @@ if serial_device is None:
     serial_device = "/dev/ttyUSB0"
 
 last_update = datetime.datetime.now()
-if serial_device is None:
+if open_delay_seconds is None:
     open_delay_seconds = 5
 
 
