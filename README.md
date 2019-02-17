@@ -1,10 +1,12 @@
 Doorman (POC)
 -------
-Deeplens application to notify when a user enters a room.
+Deeplens application that will identify a person with in its range, when it finds it will send it to a S3 bucket to be analyzed by the aws recognition service, if it is a known person it will put a open command to a mqtt topic that will be consumed by the same deeplens again that will trigger a USB relay. The USB relay should be connected to a "open door button" so the person can open the door without a access tag
 
-Hardware
+Pre-requierment
 -------
-The usb relay supported is the following,  https://www.amazon.co.uk/HALJIA-Module-Control-Intelligent-control/dp/B075F6J6WL/ref=sr_1_21?ie=UTF8&qid=1542143943&sr=8-21&keywords=usb+relay+5v
+- Docker on the machine you will deploy from
+- Deeplens
+- The usb relay supported is the following,  https://www.amazon.co.uk/HALJIA-Module-Control-Intelligent-control/dp/B075F6J6WL/ref=sr_1_21?ie=UTF8&qid=1542143943&sr=8-21&keywords=usb+relay+5v
 Make sure to check dmesg when you plugin the device, if it does not register as /dev/ttyUSB0 you need to update the variable DeepLensDeviceReadAndWrite with the right one
 
 Setup
@@ -27,11 +29,13 @@ If you run into any problems during the deployment to the deeplens, find the dev
 
 Tweaking
 -----
-There is a hack due to there is no state on the deeplens / aws side, for every detection (every frame it processes) it will fire away a open command. To not let the door get 20 door commands at the same time, there is a deplay / ratelimit in the code to wait for X amount of seconds after the first open command. Default is 5 and it is defined in the file trigger_open.py as the variable open_delay_seconds 
+There is a hack due to there is no state on the deeplens / aws side, for every detection (every frame it processes) it will fire away a open command. To not let the trigger_open get 20 open commands at the same time, there is a deplay / ratelimit in the code to wait for X amount of seconds after the first open command. Default is 5 and it is defined in the file trigger_open.py as the variable open_delay_seconds 
 
 Todo
 -----
 -Include nanpy code that worked with a arduino+relay over usb in a early stage before changed device to a usb relay
+-Use the person with the highest area, it looks like it gets confused with multiple persons
+-Trigger another lambda function that will confirm a second auth to the person to prevent any abuse by using a mask with a printed face on
 ...
 
 Inspired by
