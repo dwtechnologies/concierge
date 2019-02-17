@@ -16,7 +16,7 @@ is_deeplens_upside_down = os.environ['IS_DEEPLENS_UPSIDE_DOWN']
 
 # setup the camera and frame
 ret, frame = awscam.getLastFrame()
-if is_deeplens_upside_down == True:
+if is_deeplens_upside_down == 'yes':
     frame = cv2.flip( frame, -1 )
 ret,jpeg = cv2.imencode('.jpg', frame)
 
@@ -58,7 +58,7 @@ def greengrass_infinite_infer_run():
         # try to get a frame from the camera
         ret, frame = awscam.getLastFrame()
         #flip the screen
-        if is_deeplens_upside_down == True:
+        if is_deeplens_upside_down == 'yes':
             frame = cv2.flip( frame, -1 )
         if ret == False:
             raise Exception("Failed to get frame from the stream")
@@ -72,7 +72,7 @@ def greengrass_infinite_infer_run():
             ret, frame = awscam.getLastFrame()
 
             #Rotate the frame if the camera is mounted upside down
-            if is_deeplens_upside_down == True:
+            if is_deeplens_upside_down == 'yes':
                 frame = cv2.flip( frame, -1 )
 
             # Raise an exception if failing to get a frame
