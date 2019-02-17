@@ -21,10 +21,10 @@ Parameters:
     Type: String
     
   IsDeeplensUpsideDown:
-    Type: Boolean
+    Type: String
 
   OpenDelaySeconds:
-    Type: Integer
+    Type: String
 
   RelayUsbDevice: 
     Type: String
