@@ -13,6 +13,8 @@ from threading import Timer
 topic_name = os.environ['IOT_TOPIC']
 iot_endpoint = os.environ['IOT_ENDPOINT']
 device_name = os.environ['DEVICE_NAME']
+serial_device = os.environ['DeepLensDeviceReadAndWrite']
+open_delay_seconds = os.environ['OPEN_DELAY_SECONDS']
 
 # certificates
 ca = "/etc/ssl/certs/ca-certificates.crt"
@@ -20,10 +22,12 @@ private = "/etc/greengrass-certs/cloud.pem.key"
 cert = "/etc/greengrass-certs/cloud.pem.crt"
 
 ##https://www.amazon.co.uk/gp/product/B075F6J6WL/ref=ppx_yo_dt_b_asin_title_o02__o00_s01?ie=UTF8&psc=1 device
-serial_device = "/dev/ttyUSB0"
+if serial_device is None:
+    serial_device = "/dev/ttyUSB0"
 
 last_update = datetime.datetime.now()
-open_delay_seconds = 5
+if serial_device is None:
+    open_delay_seconds = 5
 
 
 def is_online():

@@ -19,6 +19,15 @@ Parameters:
 
   IoTTopic:
     Type: String
+    
+  IsDeeplensUpsideDown:
+    Type: Boolean
+
+  OpenDelaySeconds:
+    Type: Integer
+
+  RelayUsbDevice: 
+    Type: String
 
 
 Resources:
@@ -316,6 +325,7 @@ Resources:
       Environment:
         Variables:
           BUCKET_NAME: !Ref BucketName
+          IS_DEEPLENS_UPSIDE_DOWN: !Ref IsDeeplensUpsideDown
 
   triggerOpen:
     Type: AWS::Serverless::Function
@@ -334,7 +344,8 @@ Resources:
           DEVICE_NAME: !Ref DeviceName
           IOT_ENDPOINT: !Ref IOTEndpoint
           IOT_TOPIC: !Ref IoTTopic
-          DeepLensDeviceReadAndWrite: /dev/ttyUSB0
+          DeepLensDeviceReadAndWrite: !Ref RelayUsbDevice 
+          OPEN_DELAY_SECONDS: !Ref OpenDelaySeconds
 
 Outputs:
   apiurl:
