@@ -7,6 +7,13 @@ It is a fork of the Doorman community project.
 Here is a demo, normally it takes 2-4s for the whole flow but in this case we where lucky with the speed of the seutp.
 [![Here is a demo of concierge service in action at Daniel Wellington office](http://img.youtube.com/vi/nysLLK3DOeg/0.jpg)](http://www.youtube.com/watch?v=nysLLK3DOeg)
 
+Presentations
+---
+- [AWS Meetup - Spot instances and ECS, Re:invent recap and Deeplens @DW](https://www.meetup.com/aws-stockholm/events/255772998/)
+-- [![Video recording](http://img.youtube.com/vi/b6p2WG4a9A0/0.jpg)](https://www.youtube.com/watch?v=b6p2WG4a9A0)
+- [AWS Community Day Copenhagen 2019](https://awscommunitynordics.org/communityday/)
+-- Presentation or video will come
+
 Prerequisite
 ---
 - Docker on the machine you will deploy from (tested on a Mac and Ubuntu 18.04
