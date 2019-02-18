@@ -29,7 +29,7 @@ deploy:
 	cd source/find-person; mkdir dist \
 		&& cp find_person.py dist/ \
 		&& cd dist; zip deployment.zip *
-	docker run -v ${PWD}/source/trigger-open:/app -w /app -it python:2.7-alpine pip install -r requirements.txt -t ./dist \
+	docker run -u ${UID}:${GID} -v ${PWD}/source/trigger-open:/app -w /app -it python:2.7-alpine pip install -r requirements.txt -t ./dist \
 		&& cd source/trigger-open; cp trigger_open.py dist/ \
 		&& cd dist/; zip -r deployment.zip *
 	# sam
