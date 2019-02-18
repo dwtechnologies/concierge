@@ -320,7 +320,7 @@ Resources:
       Runtime: python2.7
       MemorySize: 2048
       Timeout: 10
-      CodeUri: ./source/find-person/deployment.zip
+      CodeUri: ./source/find-person/dist/deployment.zip
       AutoPublishAlias: prod
       Environment:
         Variables:
