@@ -1,14 +1,17 @@
-# Concierge (POC)
+# Concierge
 
-Deeplens application that will identify a person with in its range, when it finds it will send it to a S3 bucket to be analyzed by the aws recognition service, if it is a known person it will put a open command to a mqtt topic that will be consumed by the same deeplens again that will trigger a USB relay. The USB relay should be connected to a "open door button" so the person can open the door without a access tag
+A AWS Deeplens application that will identify a person with in its range, when it finds it will send the picture to a S3 bucket to be analyzed by the aws recognition service. Ff it is a known person it will put a open command to a topic that will be consumed by the same deeplens again that will trigger a USB relay. The USB relay should be connected to a "open door button" so the person can open the door without a access tag
 
+It is a fork of the Doorman community project.
+
+Here is a demo, normally it takes 2-4s for the whole flow but in this case we where lucky with the speed of the seutp.
 [![Here is a demo of concierge service in action at Daniel Wellington office](http://img.youtube.com/vi/nysLLK3DOeg/0.jpg)](http://www.youtube.com/watch?v=nysLLK3DOeg)
 
 Prerequisite
 ---
-- Docker on the machine you will deploy from
-- Deeplens
-- The USB relay supported is the following,  https://www.amazon.co.uk/HALJIA-Module-Control-Intelligent-control/dp/B075F6J6WL/ref=sr_1_21?ie=UTF8&qid=1542143943&sr=8-21&keywords=usb+relay+5v
+- Docker on the machine you will deploy from (tested on a Mac and Ubuntu 18.04
+- [AWS Deeplens](https://aws.amazon.com/deeplens/)
+- The USB relay supported is the following (for a 5V button),  https://www.amazon.co.uk/HALJIA-Module-Control-Intelligent-control/dp/B075F6J6WL/ref=sr_1_21?ie=UTF8&qid=1542143943&sr=8-21&keywords=usb+relay+5v
 Make sure to check dmesg when you plugin the device, if it does not register as /dev/ttyUSB0 you need to update the variable DeepLensDeviceReadAndWrite with the right one
 
 Setup
@@ -28,8 +31,8 @@ Quite a few steps, needs cleanup, most of it can be automated.
 
 Troubleshooting
 ---
-If you run into any problems during the deployment to the deeplens, find the device in the Greengras console and look at the deployment error you get.
-If it fails the first time you will the error "An error occurred (ValidationError) when calling the CreateChangeSet operation: Stack:arn:aws:cloudformation:us-east-1:494090316628:stack/concierge/6bab71c0-3357-11e9-892f-12b323895910 is in ROLLBACK_COMPLETE state and can not be updated.", you need to manually delete the stack to rerun.
+- If you run into any problems during the deployment to the deeplens, find the device in the Greengras console and look at the deployment error you get.
+- If it fails the first time you will the error "An error occurred (ValidationError) when calling the CreateChangeSet operation: Stack:arn:aws:cloudformation:us-east-1:494090316628:stack/concierge/6bab71c0-3357-11e9-892f-12b323895910 is in ROLLBACK_COMPLETE state and can not be updated.", you need to manually delete the stack to rerun.
 
 Tweaking
 ---
@@ -37,9 +40,9 @@ There is a hack due to there is no state on the deeplens / aws side, for every d
 
 Todo
 ---
--Include nanpy code that worked with a arduino+relay over usb in a early stage before changed device to a usb relay
--Use the person with the highest area, it looks like it gets confused with multiple persons
--Trigger another lambda function that will confirm a second auth to the person to prevent any abuse by using a mask with a printed face on
+- Include nanpy code that worked with a arduino+relay over usb in a early stage before changed device to a usb relay
+- Use the person with the highest area, it looks like it gets confused with multiple persons
+- Trigger another lambda function that will confirm a second auth to the person to prevent any abuse by using a mask with a printed face on
 ...
 
 Inspired by
