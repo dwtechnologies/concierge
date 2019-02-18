@@ -342,7 +342,7 @@ Resources:
       Environment:
         Variables:
           DEVICE_NAME: !Ref DeviceName
-          IOT_ENDPOINT: !Ref IOTEndpoint
+          IOT_ENDPOINT: !Ref IoTEndpoint
           IOT_TOPIC: !Ref IoTTopic
           DeepLensDeviceReadAndWrite: !Ref RelayUsbDevice 
           OPEN_DELAY_SECONDS: !Ref OpenDelaySeconds
