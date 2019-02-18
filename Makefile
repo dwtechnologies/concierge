@@ -2,7 +2,7 @@
 ENVIRONMENT        ?= prod
 PROJECT            =  itops
 STACK_NAME         =  concierge
-ARTIFACTS_BUCKET   =  bucket-name
+ARTIFACTS_BUCKET   =  bucket-name-for-lambda-deployment
 AWS_DEFAULT_REGION ?= us-east-1
 
 sam_package = aws cloudformation package \
@@ -29,9 +29,9 @@ deploy:
 	cd source/find-person; mkdir dist \
 		&& cp find_person.py dist/ \
 		&& cd dist; zip deployment.zip *
-	docker run -u ${UID}:${GID} -v ${PWD}/source/trigger-open:/app -w /app -it python:2.7-alpine pip install -r requirements.txt -t ./dist \
-		&& cd source/trigger-open; cp trigger_open.py dist/ \
-		&& cd dist/; zip -r deployment.zip *
+	docker run -v ${PWD}/source/trigger-open:/app -w /app -it python:2.7-alpine sh -c "pip install -r requirements.txt -t ./dist; chmod -R 777 dist"
+		cd source/trigger-open && cp trigger_open.py dist/ \
+		&& cd dist/ && zip -r deployment.zip * && cp deployment.zip /tmp&& cp deployment.zip /tmp
 	# sam
 	$(call sam_package)
 	$(call sam_deploy)

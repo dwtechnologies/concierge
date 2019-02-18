@@ -337,7 +337,7 @@ Resources:
       Runtime: python2.7
       MemorySize: 128
       Timeout: 10
-      CodeUri: ./source/trigger-open/deployment.zip
+      CodeUri: ./source/trigger-open/dist/deployment.zip
       AutoPublishAlias: prod
       Environment:
         Variables:
