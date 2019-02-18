@@ -1,4 +1,4 @@
-Doorman (POC)
+Concierge (POC)
 -------
 Deeplens application that will identify a person with in its range, when it finds it will send it to a S3 bucket to be analyzed by the aws recognition service, if it is a known person it will put a open command to a mqtt topic that will be consumed by the same deeplens again that will trigger a USB relay. The USB relay should be connected to a "open door button" so the person can open the door without a access tag
 
