@@ -1,7 +1,7 @@
 
 ENVIRONMENT        ?= prod
 PROJECT            =  itops
-STACK_NAME         =  doorman
+STACK_NAME         =  concierge
 ARTIFACTS_BUCKET   =  bucket-name
 AWS_DEFAULT_REGION ?= us-east-1
 

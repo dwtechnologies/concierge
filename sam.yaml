@@ -1,5 +1,5 @@
 Transform: AWS::Serverless-2016-10-31
-Description: Doorman
+Description: Concierge
 
 Parameters:
   BucketName:
@@ -36,10 +36,10 @@ Resources:
     Properties:
       BucketName: !Ref BucketName
 
-  doormanApi:
+  conciergeApi:
     Type: AWS::Serverless::Api
     Properties:
-      Name: doorman-api
+      Name: concierge-api
       StageName: api
       DefinitionBody:
         swagger: 2.0
@@ -230,8 +230,8 @@ Resources:
   train:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: doorman-train
-      Description: "doorman - train function"
+      FunctionName: concierge-train
+      Description: "concierge - train function"
       Handler: main
       Role: !GetAtt trainRole.Arn
       Runtime: go1.x
@@ -246,15 +246,15 @@ Resources:
         Api:
           Type: Api
           Properties:
-            RestApiId: !Ref doormanApi
+            RestApiId: !Ref conciergeApi
             Path: /faces/train
             Method: post
 
   guess:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: doorman-guess
-      Description: "doorman - guess function"
+      FunctionName: concierge-guess
+      Description: "concierge - guess function"
       Handler: main
       Role: !GetAtt guessRole.Arn
       Runtime: go1.x
@@ -282,8 +282,8 @@ Resources:
   unknown:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: doorman-unknown
-      Description: "doorman - unknown function"
+      FunctionName: concierge-unknown
+      Description: "concierge - unknown function"
       Handler: main
       Role: !GetAtt unknownRole.Arn
       Runtime: go1.x
@@ -294,7 +294,7 @@ Resources:
         Variables:
           BUCKET_NAME: !Ref BucketName
           TEAMS_WEBHOOK: !Ref TeamsWebhook
-          TRAIN_URL: !Sub https://${doormanApi}.execute-api.${AWS::Region}.amazonaws.com/api/faces/train
+          TRAIN_URL: !Sub https://${conciergeApi}.execute-api.${AWS::Region}.amazonaws.com/api/faces/train
       Events:
         imageEvent:
           Type: S3
@@ -313,8 +313,8 @@ Resources:
   findPerson:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: doorman-find-person
-      Description: "doorman - find person function (greengrass)"
+      FunctionName: concierge-find-person
+      Description: "concierge - find person function (greengrass)"
       Handler: find_person.function_handler
       Role: !GetAtt greengrassRole.Arn
       Runtime: python2.7
@@ -330,8 +330,8 @@ Resources:
   triggerOpen:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: doorman-trigger-open
-      Description: "doorman - trigger open function (greengrass)"
+      FunctionName: concierge-trigger-open
+      Description: "concierge - trigger open function (greengrass)"
       Handler: trigger_open.function_handler
       Role: !GetAtt greengrassRole.Arn
       Runtime: python2.7
@@ -350,5 +350,5 @@ Resources:
 Outputs:
   apiurl:
     Description: API url
-    Value: !Sub https://${doormanApi}.execute-api.${AWS::Region}.amazonaws.com/api
+    Value: !Sub https://${conciergeApi}.execute-api.${AWS::Region}.amazonaws.com/api
 
