@@ -1,10 +1,10 @@
 # Concierge
 
-A AWS Deeplens application that will identify a person with in its range, when it finds it will send the picture to a S3 bucket to be analyzed by the aws recognition service. Ff it is a known person it will put a open command to a topic that will be consumed by the same deeplens again that will trigger a USB relay. The USB relay should be connected to a "open door button" so the person can open the door without a access tag
+A AWS Deeplens application that will identify a person with in its range, when it finds a person will send the picture to a S3 bucket to be analyzed by the aws recognition service. If it is a known person it will put a open command to a topic that will be consumed by the same deeplens again that will trigger a USB relay. The USB relay should be connected to a "open door button" so the person can open the door without a access tag
 
 It is a fork of the Doorman community project.
 
-Here is a demo, normally it takes 2-4s for the whole flow but in this case we where lucky with the speed of the seutp.
+Here is a demo, normally it takes 2-4s for the whole flow but in this case we where lucky with the speed of the setup.
 [![Here is a demo of concierge service in action at Daniel Wellington office](http://img.youtube.com/vi/nysLLK3DOeg/0.jpg)](http://www.youtube.com/watch?v=nysLLK3DOeg)
 
 Presentations
@@ -26,6 +26,7 @@ Setup
 Quite a few steps, needs cleanup, most of it can be automated.
 
 - Fix 'parameters.conf' file to fit your environment
+- You can find the IoTEndpoint value by running aws --region {region} iot describe-endpoint
 - Fix AWSDeepLensGreengrassGroupRole role with the S3 bucket permissions you defined in parameters.config
 - Create a Rekognition collection (in the same region as in params.conf) using [aws cli](https://docs.aws.amazon.com/cli/latest/reference/rekognition/create-collection.html)
 
