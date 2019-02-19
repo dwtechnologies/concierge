@@ -12,7 +12,7 @@ Presentations
 - [AWS Meetup - Spot instances and ECS, Re:invent recap and Deeplens @DW 2018-12](https://www.meetup.com/aws-stockholm/events/255772998/)
 [![Video recording](http://img.youtube.com/vi/b6p2WG4a9A0/0.jpg)](https://www.youtube.com/watch?v=b6p2WG4a9A0)
 - [AWS Community Day Copenhagen 2019-02](https://awscommunitynordics.org/communityday/)
-Presentation or video will come
+[![Presentation material](https://image.slidesharecdn.com/awscommunityday2019q1-190219141955/95/aws-community-day-copenhagen-2019-bring-ml-awareness-with-deeplens-to-the-business-by-accessing-the-office-with-the-face-1-638.jpg)](https://www.slideshare.net/danielwellingtontechnology/aws-community-day-copenhagen-2019-bring-ml-awareness-with-deeplens-to-the-business-by-accessing-the-office-with-the-face)
 
 Prerequisite
 ---
