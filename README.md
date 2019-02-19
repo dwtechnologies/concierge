@@ -10,16 +10,16 @@ Here is a demo, normally it takes 2-4s for the whole flow but in this case we wh
 Presentations
 ---
 - [AWS Meetup - Spot instances and ECS, Re:invent recap and Deeplens @DW](https://www.meetup.com/aws-stockholm/events/255772998/)
--- [![Video recording](http://img.youtube.com/vi/b6p2WG4a9A0/0.jpg)](https://www.youtube.com/watch?v=b6p2WG4a9A0)
+[![Video recording](http://img.youtube.com/vi/b6p2WG4a9A0/0.jpg)](https://www.youtube.com/watch?v=b6p2WG4a9A0)
 - [AWS Community Day Copenhagen 2019](https://awscommunitynordics.org/communityday/)
--- Presentation or video will come
+Presentation or video will come
 
 Prerequisite
 ---
 - Docker on the machine you will deploy from (tested on a Mac and Ubuntu 18.04
 - [AWS Deeplens](https://aws.amazon.com/deeplens/)
 - The USB relay supported is the following (for a 5V button),  https://www.amazon.co.uk/HALJIA-Module-Control-Intelligent-control/dp/B075F6J6WL/ref=sr_1_21?ie=UTF8&qid=1542143943&sr=8-21&keywords=usb+relay+5v
-Make sure to check dmesg when you plugin the device, if it does not register as /dev/ttyUSB0 you need to update the variable DeepLensDeviceReadAndWrite with the right one
+- Make sure to check dmesg when you plugin the device, if it does not register as /dev/ttyUSB0 you need to update the variable DeepLensDeviceReadAndWrite, same goes for variable serial_device inside trigger_open.py
 
 Setup
 ---
