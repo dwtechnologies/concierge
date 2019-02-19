@@ -27,7 +27,26 @@ Quite a few steps, needs cleanup, most of it can be automated.
 
 - Fix 'parameters.conf' file to fit your environment
 - You can find the IoTEndpoint value by running aws --region {region} iot describe-endpoint or the AWS IOT console (make sure you are in the right region) and settings. You will find the value as "Endpoint",  direct url https://console.aws.amazon.com/iot/home?region=<YOUR-REGION>#/settings
-- Fix AWSDeepLensGreengrassGroupRole role with the S3 bucket permissions you defined in parameters.config
+- Create a new policy and then attach it to the AWSDeepLensGreengrassGroupRole role, make sure to update the BucketName-from-parameters.conf from bellow to the actual value from parameters.conf
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "s3:PutObject",
+                "s3:PutObjectAcl"
+            ],
+            "Resource": [
+                "arn:aws:s3:::BucketName-from-parameters.conf/*",
+                "arn:aws:s3:::BucketName-from-parameters.conf"
+            ]
+        }
+    ]
+}
+```
 - Create a Rekognition collection (in the same region as in params.conf) using [aws cli](https://docs.aws.amazon.com/cli/latest/reference/rekognition/create-collection.html)
 
 - Deploy the Lambda functions with make (verify env variables in the Makefile)
