@@ -42,10 +42,12 @@ Troubleshooting
 - If you run into any problems during the deployment to the deeplens, find the device in the Greengras console and look at the deployment error you get.
 - If it fails the first time you will the error "An error occurred (ValidationError) when calling the CreateChangeSet operation: Stack:arn:aws:cloudformation:us-east-1:494090316628:stack/concierge/6bab71c0-3357-11e9-892f-12b323895910 is in ROLLBACK_COMPLETE state and can not be updated.", you need to manually delete the stack to rerun.
 - If your door opening commands does not triggers and gets consumed by the device, it is most likely due to the name of the device does not match, check the lambda logs for concierge-trigger-open (from the deeplens console). The logs will show something similar to [INFO]-mqtt_core.py:88,Client id: deeplens_*, make sure that this matches with the value DeviceNeme from parameters.conf 
+
 Testing
 ---
 You can test the "door open" flow by going into the greengras console, testing. In the botton part (Publish), put in the value of your topic (found as IoTTopic in the parameters.conf) and the data bellow
-```{
+```
+{
   "username": "Lezgin",
   "command": "open"
 }
@@ -53,8 +55,10 @@ You can test the "door open" flow by going into the greengras console, testing. 
 
 Audit log
 ---
-Any door openings is logged in cloudwatch logs, you can find them by browsing to the device and then lambda logs. You will find the log concierge-trigger-open, example bellow
-```[INFO]-trigger_open.py:44,received message from topic: doorman
+Any door openings is logged in cloudwatch logs, you can find them by browsing to the device and then lambda logs.
+You will find the log concierge-trigger-open, example bellow
+```
+[INFO]-trigger_open.py:44,received message from topic: doorman
 [INFO]-trigger_open.py:61,opening door to Lezgin.Bakircioglu
 [INFO]-trigger_open.py:75,closing door
 ```
@@ -73,5 +77,5 @@ Todo
 
 Inspired by
 ---
- [AWS Deeplens Hackaton](https://devpost.com/software/doorman-a1oh0e)
+[AWS Deeplens Hackaton](https://devpost.com/software/doorman-a1oh0e)
 
