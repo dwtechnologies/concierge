@@ -9,9 +9,9 @@ Here is a demo, normally it takes 2-4s for the whole flow but in this case we wh
 
 Presentations
 ---
-- [AWS Meetup - Spot instances and ECS, Re:invent recap and Deeplens @DW](https://www.meetup.com/aws-stockholm/events/255772998/)
+- [AWS Meetup - Spot instances and ECS, Re:invent recap and Deeplens @DW 2018-12](https://www.meetup.com/aws-stockholm/events/255772998/)
 [![Video recording](http://img.youtube.com/vi/b6p2WG4a9A0/0.jpg)](https://www.youtube.com/watch?v=b6p2WG4a9A0)
-- [AWS Community Day Copenhagen 2019](https://awscommunitynordics.org/communityday/)
+- [AWS Community Day Copenhagen 2019-02](https://awscommunitynordics.org/communityday/)
 Presentation or video will come
 
 Prerequisite
@@ -48,7 +48,7 @@ Testing
 You can test the "door open" flow by going into the greengras console, testing. In the botton part (Publish), put in the value of your topic (found as IoTTopic in the parameters.conf) and the data bellow
 ```
 {
-  "username": "Lezgin",
+  "username": "Lezgin.Bakircioglu",
   "command": "open"
 }
 ```
