@@ -345,6 +345,7 @@ Resources:
           IOT_ENDPOINT: !Ref IoTEndpoint
           IOT_TOPIC: !Ref IoTTopic
           DeepLensDeviceReadAndWrite: !Ref RelayUsbDevice 
+          USB_RELAY: !Ref RelayUsbDevice 
           OPEN_DELAY_SECONDS: !Ref OpenDelaySeconds
 
 Outputs:

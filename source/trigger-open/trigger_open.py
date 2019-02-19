@@ -16,8 +16,9 @@ device_name = os.environ['DEVICE_NAME']
 #This will throw errors such as 
 #[FATAL]-lambda_runtime.py:107,Failed to import handler function "trigger_open.function_handler" due to exception: 'DeepLensDeviceReadAndWrite'
 #[FATAL]-lambda_runtime.py:311,Failed to initialize Lambda runtime due to exception: 'DeepLensDeviceReadAndWrite'
-#serial_device = os.environ['DeepLensDeviceReadAndWrite']
-open_delay_seconds = os.environ['OPEN_DELAY_SECONDS']
+serial_device = os.environ['USB_RELAY']
+#FIX, when this is set it will not open the door, some bug....
+#open_delay_seconds = os.environ['OPEN_DELAY_SECONDS']
 
 # certificates
 ca = "/etc/ssl/certs/ca-certificates.crt"
@@ -25,13 +26,23 @@ private = "/etc/greengrass-certs/cloud.pem.key"
 cert = "/etc/greengrass-certs/cloud.pem.crt"
 
 ##https://www.amazon.co.uk/gp/product/B075F6J6WL/ref=ppx_yo_dt_b_asin_title_o02__o00_s01?ie=UTF8&psc=1 device
-#if serial_device is None:
-serial_device = "/dev/ttyUSB0"
+print "BEFORE serial_device variable is set to: %s" % serial_device
+
+if serial_device is None:
+    serial_device = "/dev/ttyUSB0"
+    print "serial_device variable is set to: %s" % serial_device
+else:
+    print "open_delay_seconds set overrided value from 5 to %s" % os.environ['OPEN_DELAY_SECONDS']
 
 last_update = datetime.datetime.now()
-if open_delay_seconds is None:
-    open_delay_seconds = 5
 
+#FIX, when this is set it will not open the door, some bug....
+if int(os.environ['OPEN_DELAY_SECONDS']) == 5:
+    open_delay_seconds = 5
+    print "open_delay_seconds set to default 5s"
+else:
+    open_delay_seconds = int(os.environ['OPEN_DELAY_SECONDS'])
+    print "open_delay_seconds set overrided value from 5 to %s" % os.environ['OPEN_DELAY_SECONDS']
 
 def is_online():
     print "ready to consume from topic '%s'" % topic_name
