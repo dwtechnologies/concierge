@@ -14,10 +14,14 @@ s3 = session.create_client('s3')
 s3_bucket = os.environ['BUCKET_NAME']
 is_deeplens_upside_down = os.environ['IS_DEEPLENS_UPSIDE_DOWN']
 
+print "is_deeplens_upside_down variable is set to: %s" % os.environ['IS_DEEPLENS_UPSIDE_DOWN']
+print "s3_bucket variable is set to: %s" % os.environ['BUCKET_NAME']
+
 # setup the camera and frame
 ret, frame = awscam.getLastFrame()
 if is_deeplens_upside_down == 'yes':
     frame = cv2.flip( frame, -1 )
+    print "Will flip the pictures upside down (as the camera is mounted upside down) so the model will work better."
 ret,jpeg = cv2.imencode('.jpg', frame)
 
 Write_To_FIFO = True
