@@ -98,3 +98,6 @@ Inspired by
 ---
 [AWS Deeplens Hackaton](https://devpost.com/software/doorman-a1oh0e)
 
+License
+---
+GPLv3
