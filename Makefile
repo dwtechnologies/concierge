@@ -2,7 +2,7 @@
 ENVIRONMENT        ?= prod
 PROJECT            =  itops
 STACK_NAME         =  concierge
-ARTIFACTS_BUCKET   =  bucket-name-for-lambda-deployment
+ARTIFACTS_BUCKET   =  deeplens-sagemaker-lezgin
 AWS_DEFAULT_REGION ?= us-east-1
 
 sam_package = aws cloudformation package \
@@ -25,13 +25,14 @@ deploy:
 	cd source/guess; GOOS=linux go build -ldflags="-s -w" -o main && zip deployment.zip main
 	cd source/unknown; GOOS=linux go build -ldflags="-s -w" -o main && zip deployment.zip main
 	cd source/train; GOOS=linux go build -ldflags="-s -w" -o main && zip deployment.zip main
+	cd source/alexa-skill-concierge-open-door; go get github.com/ericdaugherty/alexa-skills-kit-golang; GOOS=linux go build -ldflags="-s -w" -o main && zip deployment.zip main
 	# python
 	cd source/find-person; mkdir dist \
 		&& cp find_person.py dist/ \
 		&& cd dist; zip deployment.zip *
 	docker run -v ${PWD}/source/trigger-open:/app -w /app -it python:2.7-alpine sh -c "pip install -r requirements.txt -t ./dist; chmod -R 777 dist"
 		cd source/trigger-open && cp trigger_open.py dist/ \
-		&& cd dist/ && zip -r deployment.zip * && cp deployment.zip /tmp&& cp deployment.zip /tmp
+		&& cd dist/ && zip -r deployment.zip * 
 	# sam
 	$(call sam_package)
 	$(call sam_deploy)

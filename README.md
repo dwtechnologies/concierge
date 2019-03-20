@@ -55,6 +55,7 @@ Quite a few steps, needs cleanup, most of it can be automated.
 - Remove the `deeplens-object-detection` function, and add a function for `find_person` and `trigger_open`
 - If its empty when you start you can choose to add the deeplens-object-detection model and add the `find_person` and `trigger_open` function.
 - Deploy the application to your deeplens
+- If using alexa, create a alexa skill and name it doorman and import the alexa-skill-doorman.json file in the json editor. After the deployment, copy the ARN (go the the lambda function and on the top right, look for ARN - arn:aws:lambda:X:function:concierge-alexa-open-door and put that in the alexa console in the endpoint menu. Put the ARN in the "Default region" field and copy the "your skill id" and put it to the parameters.conf for the value of  AlexaApplicationID=
 
 Troubleshooting
 ---
