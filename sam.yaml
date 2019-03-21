@@ -210,6 +210,7 @@ Resources:
                 - "lambda.amazonaws.com"
             Action:
               - "sts:AssumeRole"
+
       Path: "/"
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
@@ -227,6 +228,11 @@ Resources:
                 Resource:
                   - !Sub arn:aws:s3:::${BucketName}
                   - !Sub arn:aws:s3:::${BucketName}/*
+              -
+                Effect: "Allow"
+                Action:
+                  - "iot:DescribeEndpoint"
+                Resource: "*"
 
 # lambda functions
 
@@ -236,9 +242,9 @@ Resources:
       FunctionName: concierge-alexa-open-door
       Description: "concierge - alexa skill to open door"
       Handler: main
-      Role: !GetAtt trainRole.Arn
+      Role: !GetAtt greengrassRole.Arn
       Runtime: go1.x
-      MemorySize: 128
+      MemorySize: 512
       Timeout: 10
       CodeUri: ./source/alexa-skill-concierge-open-door/deployment.zip
       Events:
@@ -357,7 +363,7 @@ Resources:
       Handler: trigger_open.function_handler
       Role: !GetAtt greengrassRole.Arn
       Runtime: python2.7
-      MemorySize: 128
+      MemorySize: 1024
       Timeout: 10
       CodeUri: ./source/trigger-open/dist/deployment.zip
       AutoPublishAlias: prod

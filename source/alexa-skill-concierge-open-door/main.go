@@ -93,24 +93,22 @@ func main() {
 func openDoor() error {
 
 	iotTopic := os.Getenv("IOT_TOPIC")
-	iotTopic = "doorman"
         cfg, err := external.LoadDefaultAWSConfig()
         log.Printf("publishing to iot-data topic %s ", iotTopic)
         // get iot endpoint
         iotClient := iot.New(cfg)
         result, err := iotClient.DescribeEndpointRequest(&iot.DescribeEndpointInput{}).Send()
-//        log.Printf("publishing to iot-endpoint %s ", *result.EndpointAddress)
         if err != nil {
-                return err
+        	log.Printf("ERROR %s ", err)
+		return err
         }
         cfg.EndpointResolver = aws.ResolveWithEndpointURL("https://" + *result.EndpointAddress)
-
+        log.Printf("will use IOT endpoint %s ", cfg.EndpointResolver)
         iotDataClient := iotdataplane.New(cfg)
         p := struct {
                 Username string `json:"username"`
                 Command  string `json:"command"`
         }{
-//                "amzn1.ask.skill.ccbf9fdc-c2da-49b2-9422-1d7434fef622",
                 os.Getenv("ALEXA_APPLICATION_ID"),
                 "open",
         }
