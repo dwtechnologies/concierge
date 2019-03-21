@@ -99,6 +99,7 @@ func openDoor() error {
         // get iot endpoint
         iotClient := iot.New(cfg)
         result, err := iotClient.DescribeEndpointRequest(&iot.DescribeEndpointInput{}).Send()
+//        log.Printf("publishing to iot-endpoint %s ", *result.EndpointAddress)
         if err != nil {
                 return err
         }
@@ -113,8 +114,8 @@ func openDoor() error {
                 os.Getenv("ALEXA_APPLICATION_ID"),
                 "open",
         }
-
         pp, _ := json.Marshal(p)
+        log.Printf("publishing the json %+v\n", pp)
         _, err = iotDataClient.PublishRequest(&iotdataplane.PublishInput{
                 Payload: pp,
                 Topic:   aws.String(iotTopic),
