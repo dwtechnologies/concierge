@@ -99,7 +99,7 @@ func openDoor() error {
         iotClient := iot.New(cfg)
         result, err := iotClient.DescribeEndpointRequest(&iot.DescribeEndpointInput{}).Send()
         if err != nil {
-        	log.Printf("ERROR %s ", err)
+		log.Printf("ERROR %s ", err)
 		return err
         }
         cfg.EndpointResolver = aws.ResolveWithEndpointURL("https://" + *result.EndpointAddress)
@@ -113,7 +113,6 @@ func openDoor() error {
                 "open",
         }
         pp, _ := json.Marshal(p)
-        log.Printf("publishing the json %+v\n", pp)
         _, err = iotDataClient.PublishRequest(&iotdataplane.PublishInput{
                 Payload: pp,
                 Topic:   aws.String(iotTopic),
