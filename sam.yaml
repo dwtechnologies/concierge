@@ -29,6 +29,8 @@ Parameters:
   RelayUsbDevice: 
     Type: String
 
+  AlexaApplicationID:
+    Type: String
 
 Resources:
   bucket:
@@ -227,6 +229,26 @@ Resources:
                   - !Sub arn:aws:s3:::${BucketName}/*
 
 # lambda functions
+
+  alexaOpenDoor:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: concierge-alexa-open-door
+      Description: "concierge - alexa skill to open door"
+      Handler: main
+      Role: !GetAtt trainRole.Arn
+      Runtime: go1.x
+      MemorySize: 128
+      Timeout: 10
+      CodeUri: ./source/alexa-skill-concierge-open-door/deployment.zip
+      Events:
+        Alexa:
+         Type: AlexaSkill
+      Environment:
+        Variables:
+          ALEXA_APPLICATION_ID: !Ref AlexaApplicationID
+          IOT_TOPIC: !Ref IoTTopic
+
   train:
     Type: AWS::Serverless::Function
     Properties:
