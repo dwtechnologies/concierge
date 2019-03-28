@@ -93,6 +93,7 @@ Todo
 - Use the person with the highest area, it looks like it gets confused with multiple persons
 - Trigger another lambda function that will confirm a second auth to the person to prevent any abuse by using a mask with a printed face on
 - Structure the README file and identify the missing parts that a new user would bump into
+- Speed up the whole flow from detection to trigger the open the door
 ...
 
 Inspired by
