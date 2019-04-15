@@ -32,6 +32,9 @@ Parameters:
   AlexaApplicationID:
     Type: String
 
+  MfaLambdaARN:
+    Type: String
+
 Resources:
   bucket:
     Type: AWS::S3::Bucket
@@ -166,6 +169,16 @@ Resources:
                 Action:
                   - "iot:DescribeEndpoint"
                 Resource: "*"
+        - PolicyName: "mfa_invoke"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              -
+                Effect: "Allow"
+                Action:
+                 - "lambda:invokeFunction"
+                Resource:
+                 - !Ref MfaLambdaARN
 
   unknownRole:
     Type: AWS::IAM::Role
@@ -295,6 +308,7 @@ Resources:
           REKOGNITION_COLLECTION_ID: !Ref RekognitionCollectionID
           IOT_TOPIC: !Ref IoTTopic
           TEAMS_WEBHOOK: !Ref TeamsWebhook
+          MFA_ARN: !Ref MfaLambdaARN
       Events:
         imageEvent:
           Type: S3

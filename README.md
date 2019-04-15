@@ -94,6 +94,9 @@ Todo
 - Trigger another lambda function that will confirm a second auth to the person to prevent any abuse by using a mask with a printed face on
 - Structure the README file and identify the missing parts that a new user would bump into
 - Speed up the whole flow from detection to trigger the open the door
+- Change to face detection model instead of person
+- Set a retention on pictures and log instead of posting to teams
+- Possibility to tag the resources (to be able to track billing)
 ...
 
 Inspired by
