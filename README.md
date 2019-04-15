@@ -56,6 +56,13 @@ Quite a few steps, needs cleanup, most of it can be automated.
 - If its empty when you start you can choose to add the deeplens-object-detection model and add the `find_person` and `trigger_open` function.
 - Deploy the application to your deeplens
 - If using alexa, create a alexa skill and name it doorman and import the alexa-skill-doorman.json file in the json editor. After the deployment, copy the ARN (go the the lambda function and on the top right, look for ARN - arn:aws:lambda:X:function:concierge-alexa-open-door and put that in the alexa console in the endpoint menu. Put the ARN in the "Default region" field and copy the "your skill id" and put it to the parameters.conf for the value of  AlexaApplicationID=
+- The MFA lambda must take the following JSON (if you dont want to change the code). The username is going to be the name that the recognition is trained for (the name you pass to the namefield in teams), make sure to pass username when training the recognition service and not nickname or anything similar.
+```
+{
+    "Function": "MFA-Auth",
+    "AuthUser": "username"
+}
+```
 
 Troubleshooting
 ---
