@@ -104,6 +104,7 @@ Todo
 - Change to face detection model instead of person
 - Set a retention on pictures and log instead of posting to teams
 - Possibility to tag the resources (to be able to track billing)
+- The project stream gets messed up (probably due to the sleep in the find_person.py), try a smarter python lib that can compare pictures locally and if it is similar to last uploaded then skip it.
 ...
 
 Inspired by
