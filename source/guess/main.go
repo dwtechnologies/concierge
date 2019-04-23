@@ -16,21 +16,11 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/aws/external"
-
-	//	"github.com/aws/aws-sdk-go/aws/session"
-	lambdasdk "github.com/aws/aws-sdk-go-v2/service/lambda"
-
-	//	"github.com/aws/aws-sdk-go-v2/aws/session"
-
-	//	"github.com/aws/aws-sdk-go/aws"
-	//	"github.com/aws/aws-sdk-go/aws/session"
-
 	"github.com/aws/aws-sdk-go-v2/service/iot"
 	"github.com/aws/aws-sdk-go-v2/service/iotdataplane"
+	lambdasdk "github.com/aws/aws-sdk-go-v2/service/lambda"
 	"github.com/aws/aws-sdk-go-v2/service/rekognition"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-
-	//	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/disintegration/imaging"
 )
 
@@ -142,15 +132,14 @@ func handler(event events.S3Event) error {
 		return err
 	}
 
-	//LERRA HACK
+	// MFA support via external Lambda middleware function
 	if os.Getenv("MFA_ARN") != "" {
 		if *userID == "Lezgin" {
 			mfa, err := mfaInvoke("lezgin.bakircioglu")
 			if err != nil {
 				return err
 			}
-			//fmt.Sprintf("%c", mfa)
-			fmt.Printf("%s", mfa)
+			log.Printf("mfa: %s", mfa)
 			//if return not auth then exit
 		}
 	}
@@ -276,94 +265,7 @@ func thumbnail(bucketName, key string) error {
 	return nil
 }
 
-/*
-	body, err := json.Marshal(map[string]interface{}{
-		"Function": "MFA-AUTH",
-		"Authuser": username,
-	})
-	type Payload struct {
-		Body string `json:"body"`
-	}
-	p := Payload{
-		Body: string(body),
-	}
-	payload, err := json.Marshal(p) // This should give you {"body":"{\"name\":\"Jimmy\"}"} if you print it out which is the required format for the lambda request body.
-	//https://stackoverflow.com/questions/52153716/how-do-you-invoke-a-lambda-function-within-another-lambda-function-using-golang
-	log.Printf("Requesting MFA request for username %s", username)
-	region := os.Getenv("AWS_REGION")
-	region = "eu-west-1"
-	session, err := session.NewSession(&aws.Config{ // Use aws sdk to connect to dynamoDB
-		Region: &region})
-	if err != nil {
-		log.Printf("%s", err)
-		return err
-	}
-	return nil
-}
-*/
-/*
-//func mfaRequest(username) {
-func mfaRequest() {
-	session, err := session.NewSession(&aws.Config{ // Use aws sdk to connect to dynamoDB
-		//Region: &region,
-		Region: "eu-west-1",
-	})
-	svc := invoke.New(session)
-	body, err := json.Marshal(map[string]interface{}{
-		"Function": "MFA-AUTH",
-		"Authuser": "lezgin.bakircioglu",
-	})
-
-	type Payload struct {
-		// You can also include more objects in the structure like below,
-		// but for my purposes body was all that was required
-		// Method string `json:"httpMethod"`
-		Body string `json:"body"`
-	}
-	p := Payload{
-		// Method: "POST",
-		Body: string(body),
-	}
-	payload, err := json.Marshal(p)
-	// Result should be: {"body":"{\"name\":\"Jimmy\"}"}
-	// This is the required format for the lambda request body.
-
-	if err != nil {
-		fmt.Println("Json Marshalling error")
-	}
-	fmt.Println(string(payload))
-
-	input := &invoke.InvokeInput{
-		FunctionName:   aws.String("reliability-mfa-auth"),
-		InvocationType: aws.String("RequestResponse"),
-		LogType:        aws.String("Tail"),
-		Payload:        payload,
-	}
-	result, err := svc.Invoke(input)
-
-	if err != nil {
-		fmt.Println("error")
-		fmt.Println(err.Error())
-	}
-	var m map[string]interface{}
-	json.Unmarshal(result.Payload, &m)
-	fmt.Println(m["body"])
-
-	invokeReponse, err := json.Marshal(m["body"])
-	resp := Response{
-		StatusCode:      200,
-		IsBase64Encoded: false,
-		Headers: map[string]string{
-			"Content-Type": "application/json",
-		},
-		Body: string(invokeReponse),
-	}
-
-}
-*/
-
 func mfaInvoke(username string) ([]byte, error) {
-	//        arn := "arn:aws:lambda:eu-west-1:494090316628:function:reliability-mfa-auth"
 	arn := os.Getenv("MFA_ARN")
 	arnSplit := strings.Split(arn, ":")
 	if len(arnSplit) != 7 {
@@ -372,27 +274,6 @@ func mfaInvoke(username string) ([]byte, error) {
 
 	region := arnSplit[3]
 	function := arnSplit[6]
-	//fmt.Printf("%s %s \n", region, function)
-	/*
-		body, err := json.Marshal(map[string]interface{}{
-			"Function": "MFA-Auth",
-			"AuthUser": username,
-		})
-			type Payload struct {
-				// You can also include more objects in the structure like below,
-				// but for my purposes body was all that was required
-				// Method string `json:"httpMethod"`
-				Body string `json:"body"`
-			}
-			p := Payload{
-				// Method: "POST",
-				Body: string(body),
-			}
-			payload, err := json.Marshal(p)
-	*/
-	//	payload, err := json.Marshal(string(body))
-	//	payload, err := json.RawMessage(string(body))
-
 	payload, err := json.Marshal(mfaRequest{
 		Function: "MFA-Auth",
 		AuthUser: username,
@@ -400,30 +281,20 @@ func mfaInvoke(username string) ([]byte, error) {
 	if err != nil {
 		fmt.Println("Json Marshalling error")
 	}
-	fmt.Println(string(payload))
+	log.Println(string(payload))
 
-	/*	//byte invoke
-		invoke, error2 := lambdaInvoke(region, function, payload)
-		if error2 != nil {
-			return nil, error2
-		}
-		return nil, invoke
-	*/
 	return lambdaInvoke(region, function, payload)
 }
 
-func lambdaInvoke(region string, function string, payload []byte) ([]byte, error) {
+func lambdaInvoke(region, function string, payload []byte) ([]byte, error) {
 	cfg, err := external.LoadDefaultAWSConfig()
 	if err != nil {
-		panic("failed to load config, " + err.Error())
+		return nil, err
 	}
-	//region=string.Split(arn,":")
-	//arn:aws:lambda:eu-west-1:494090316628:function:reliability-mfa-auth
-	//cfg.Region="eu-west-1"
 	cfg.Region = region
 	client := lambdasdk.New(cfg)
 
-	log.Printf("lambda call (region,function,payload): %s %s %s", region, function, payload)
+	log.Printf("lambda call (region: %s, function: %s,payload: %s)", region, function, payload)
 
 	res, err := client.InvokeRequest(&lambdasdk.InvokeInput{
 		FunctionName: aws.String(function),
@@ -437,12 +308,3 @@ func lambdaInvoke(region string, function string, payload []byte) ([]byte, error
 	log.Printf("%s response: %v", function, res)
 	return res.Payload, nil
 }
-
-/*
-policy needed:
-              -
-                Effect: "Allow"
-                Action:
-                  - "lambda:invokeFunction"
-                Resource:
-                                    - theInvokedLambdaArn*/
