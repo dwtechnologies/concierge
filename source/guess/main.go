@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -16,6 +17,8 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/aws/external"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/dynamodbattribute"
 	"github.com/aws/aws-sdk-go-v2/service/iot"
 	"github.com/aws/aws-sdk-go-v2/service/iotdataplane"
 	lambdasdk "github.com/aws/aws-sdk-go-v2/service/lambda"
@@ -132,6 +135,16 @@ func handler(event events.S3Event) error {
 		return err
 	}
 
+	// rate limit
+	if os.Getenv("OPEN_RATE_SECONDS") != "" {
+		grace, _ := strconv.ParseInt(os.Getenv("OPEN_RATE_SECONDS"), 10, 64)
+
+		if rateLimit(grace, *userID) {
+			log.Printf("[%s] rate limit triggered for open event", *userID)
+			return nil
+		}
+	}
+
 	// MFA support via external Lambda middleware function
 	if os.Getenv("MFA_ARN") != "" {
 		if *userID == "Lezgin" {
@@ -214,6 +227,41 @@ func handler(event events.S3Event) error {
 	return nil
 }
 
+func rateLimit(grace int64, userID string) bool {
+	now := time.Now().Unix()
+	cutoff := now - grace
+
+	cfg, err := external.LoadDefaultAWSConfig()
+	if err != nil {
+		return false
+	}
+	client := dynamodb.New(cfg)
+
+	av, err := dynamodbattribute.MarshalMap(struct {
+		Name      string `json:"name"`
+		Selector  string `json:"selector"`
+		Timestamp int64  `json:"timestamp"`
+	}{
+		Name:      "open",
+		Selector:  userID,
+		Timestamp: now,
+	})
+	if err != nil {
+		return false
+	}
+
+	_, err = client.PutItemRequest(&dynamodb.PutItemInput{
+		TableName:           aws.String(os.Getenv("DYNAMODB_TABLE_RATELIMIT")),
+		Item:                av,
+		ConditionExpression: aws.String(fmt.Sprintf("attribute_not_exists(name) | attribute(timestamp) < %d", cutoff)),
+	}).Send()
+	if err != nil {
+		return false
+	}
+
+	return true
+}
+
 func thumbnail(bucketName, key string) error {
 	cfg, err := external.LoadDefaultAWSConfig()
 	if err != nil {
@@ -283,6 +331,7 @@ func mfaInvoke(username string) ([]byte, error) {
 	}
 	log.Println(string(payload))
 
+	// invoke MFA lambda
 	return lambdaInvoke(region, function, payload)
 }
 

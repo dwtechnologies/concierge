@@ -5,6 +5,9 @@ Parameters:
   BucketName:
     Type: String
 
+  DynamoDBTableName:
+    Type: String
+
   RekognitionCollectionID:
     Type: String
 
@@ -40,6 +43,22 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Ref BucketName
+
+  DynamoDBTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Ref DynamoDBTableName
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: "name"
+          AttributeType: "S"
+        - AttributeName: "selector"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "name"
+          KeyType: "HASH"
+        - AttributeName: "selector"
+          KeyType: "RANGE"
 
   conciergeApi:
     Type: AWS::Serverless::Api
@@ -179,6 +198,24 @@ Resources:
                  - "lambda:invokeFunction"
                 Resource:
                  - !Ref MfaLambdaARN
+        - PolicyName: "dynamodb"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              -
+                Effect: "Allow"
+                Action:
+                  - "dynamodb:BatchGetItem"
+                  - "dynamodb:BatchWriteItem"
+                  - "dynamodb:DeleteItem"
+                  - "dynamodb:DescribeTable"
+                  - "dynamodb:GetItem"
+                  - "dynamodb:PutItem"
+                  - "dynamodb:Query"
+                  - "dynamodb:Scan"
+                  - "dynamodb:UpdateItem"
+                Resource:
+                  - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDBTableName}
 
   unknownRole:
     Type: AWS::IAM::Role
@@ -309,6 +346,8 @@ Resources:
           IOT_TOPIC: !Ref IoTTopic
           TEAMS_WEBHOOK: !Ref TeamsWebhook
           MFA_ARN: !Ref MfaLambdaARN
+          DYNAMODB_TABLE_RATELIMIT: !Ref DynamoDBTableName
+          OPEN_RATE_SECONDS: 30
       Events:
         imageEvent:
           Type: S3
